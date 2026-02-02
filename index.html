@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Diageo – Board Dashboard (Public Info Snapshot)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#111a33;
+      --panel2:#0f1730;
+      --text:#e8ecff;
+      --muted:#a8b2d8;
+      --line:rgba(255,255,255,.12);
+      --good:#37d67a;
+      --warn:#ffcc66;
+      --bad:#ff5c77;
+      --accent:#7aa7ff;
+      --accent2:#9b7bff;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(122,167,255,.35), transparent 55%),
+                  radial-gradient(1000px 700px at 100% 0%, rgba(155,123,255,.25), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px 18px 28px}
+    header{
+      display:flex;gap:14px;align-items:flex-start;justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .title{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .title h1{
+      margin:0;font-size:20px;letter-spacing:.2px;font-weight:800;
+    }
+    .title .sub{
+      color:var(--muted);font-size:12.5px;line-height:1.35;
+    }
+    .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+    .chip{
+      border:1px solid var(--line);
+      padding:8px 10px;border-radius:999px;
+      background:rgba(255,255,255,.04);
+      font-size:12px;color:var(--muted);
+      cursor:pointer; user-select:none;
+      transition:transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .chip:hover{transform:translateY(-1px);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2)}
+    .chip.active{color:var(--text);border-color:rgba(122,167,255,.55);background:rgba(122,167,255,.12)}
+    .grid{
+      display:grid;gap:12px;
+      grid-template-columns: 1.1fr .9fr;
+      align-items:stretch;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .chips{justify-content:flex-start}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:12px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background: rgba(0,0,0,.12);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .card .hd h2{
+      margin:0;font-size:13px;letter-spacing:.2px;font-weight:800;
+      display:flex;align-items:center;gap:8px;
+    }
+    .pill{
+      font-size:11px;color:var(--muted);
+      border:1px solid rgba(255,255,255,.14);
+      padding:6px 8px;border-radius:999px;
+      background:rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+    .card .bd{padding:12px 14px}
+    .kpis{
+      display:grid;gap:10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    @media (max-width: 720px){
+      .kpis{grid-template-columns:1fr}
+    }
+    .kpi{
+      background: rgba(0,0,0,.10);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:12px;
+      display:flex;flex-direction:column;gap:6px;
+      min-height:92px;
+    }
+    .kpi .lbl{color:var(--muted);font-size:11.5px}
+    .kpi .val{font-size:22px;font-weight:900;letter-spacing:.2px}
+    .kpi .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .badge{
+      display:inline-flex;gap:6px;align-items:center;
+      font-size:11px;border-radius:999px;padding:6px 8px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+    }
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.good{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .mono{font-family:var(--mono)}
+    .row{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .btns{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      appearance:none;border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 11px;
+      font-size:12px;
+      cursor:pointer;
+      transition:transform .12s ease, background .12s ease, border-color .12s ease;
+      text-decoration:none;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.07);border-color:rgba(122,167,255,.45)}
+    .btn.primary{background:rgba(122,167,255,.16);border-color:rgba(122,167,255,.45)}
+    .btn svg{opacity:.9}
+    .small{font-size:12px;color:var(--muted);line-height:1.4}
+    .split{
+      display:grid;gap:12px;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 720px){
+      .split{grid-template-columns:1fr}
+    }
+    .list{margin:0;padding-left:18px}
+    .list li{margin:6px 0;color:var(--text);opacity:.95}
+    .list li span{color:var(--muted)}
+    .hr{height:1px;background:rgba(255,255,255,.10);margin:10px 0}
+    .tabs{
+      display:flex;gap:8px;flex-wrap:wrap;
+      padding:10px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.10);
+    }
+    .tab{
+      font-size:12px;color:var(--muted);
+      padding:8px 10px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      cursor:pointer;
+      transition:background .12s ease, border-color .12s ease, transform .12s ease;
+      user-select:none;
+    }
+    .tab:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18)}
+    .tab.active{color:var(--text);border-color:rgba(122,167,255,.45);background:rgba(122,167,255,.12)}
+    .tabpanes{padding:12px 14px}
+    .pane{display:none}
+    .pane.active{display:block}
+    .callout{
+      padding:12px 12px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.12);
+    }
+    .callout strong{display:block;margin-bottom:6px}
+    .meter{
+      margin-top:10px;
+      border-radius:999px;
+      height:10px;
+      background:rgba(255,255,255,.10);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .meter > div{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      transition:width .6s ease;
+    }
+    .footer{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:11.5px;
+      line-height:1.45;
+      opacity:.9;
+    }
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background:rgba(10,16,32,.85);
+      border:1px solid rgba(255,255,255,.16);
+      padding:10px 12px;border-radius:12px;
+      color:var(--text);
+      font-size:12px;
+      box-shadow:var(--shadow);
+      display:none;
+      max-width:min(720px, calc(100% - 24px));
+    }
+    .toast.show{display:block;animation:pop .16s ease}
+    @keyframes pop{from{transform:translateX(-50%) translateY(8px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+    .muted{color:var(--muted)}
+    .spark{
+      width:100%;height:58px;margin-top:8px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.10);
+      padding:8px;
+    }
+    .spark svg{width:100%;height:100%}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .legend .badge{padding:5px 8px}
+    .kbd{
+      font-family:var(--mono);
+      border:1px solid rgba(255,255,255,.14);
+      border-bottom-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.05);
+      border-radius:10px;
+      padding:4px 6px;
+      font-size:11px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Diageo – Current Performance Dashboard (Public Information)</h1>
+        <div class="sub">
+          Designed as a single-page, clickable slide link. Data points are pre-filled from FY25/FY24 annual reporting and can be edited inline in the <span class="mono">CONFIG</span> section below.
+        </div>
+      </div>
+      <div class="chips" id="chips">
+        <div class="chip active" data-filter="all">All</div>
+        <div class="chip" data-filter="financial">Financial</div>
+        <div class="chip" data-filter="market">Market</div>
+        <div class="chip" data-filter="strategy">Strategy</div>
+        <div class="chip" data-filter="esg">ESG</div>
+        <div class="chip" data-filter="risk">Risks</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: KPI SUMMARY -->
+      <section class="card" data-tags="financial market">
+        <div class="hd">
+          <h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 19H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M7 15l4-4 3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Performance snapshot
+          </h2>
+          <span class="pill" id="asOf">As of: —</span>
+        </div>
+        <div class="bd">
+          <div class="kpis" id="kpiGrid"></div>
+
+          <div class="row">
+            <div class="small">
+              <span class="kbd">Tip</span> Click any KPI tile for context and board prompts.
+            </div>
+            <div class="btns">
+              <a class="btn primary" id="yahooBtn" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M14 3h7v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Open share price (Yahoo Finance)
+              </a>
+              <button class="btn" id="copyLinkBtn" type="button" title="Copy this page URL">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 9h10v10H9V9z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Copy link
+              </button>
+            </div>
+          </div>
+
+          <div class="spark" aria-label="Illustrative trend sparkline (editable)">
+            <svg viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-label="Illustrative trend line">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="currentColor" stop-opacity="0.9"/>
+                  <stop offset="1" stop-color="currentColor" stop-opacity="0.35"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,28 L10,26 L20,25 L30,27 L40,24 L50,23 L60,25 L70,21 L80,20 L90,19 L100,18"
+                    fill="none" stroke="currentColor" stroke-width="2" opacity="0.9"/>
+              <path d="M0,40 L0,28 L10,26 L20,25 L30,27 L40,24 L50,23 L60,25 L70,21 L80,20 L90,19 L100,18 L100,40 Z"
+                    fill="url(#g1)" opacity="0.18"/>
+            </svg>
+          </div>
+          <div class="legend">
+            <span class="badge"><span class="dot good"></span> Positive momentum</span>
+            <span class="badge"><span class="dot warn"></span> Mixed / watch</span>
+            <span class="badge"><span class="dot bad"></span> Pressure</span>
+          </div>
+
+          <div class="footer">
+            <strong class="muted">Note:</strong> Replace “illustrative” charts with your own internal time series if desired. This file is purposefully self-contained (no external libraries).
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: BOARD TOPICS / TABS -->
+      <section class="card" data-tags="strategy esg risk">
+        <div class="hd">
+          <h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            Board discussion cockpit
+          </h2>
+          <span class="pill">Click tabs</span>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Dashboard tabs">
+          <div class="tab active" role="tab" tabindex="0" aria-selected="true" data-tab="sentiment">Investor sentiment</div>
+          <div class="tab" role="tab" tabindex="0" aria-selected="false" data-tab="priorities">Strategic priorities</div>
+          <div class="tab" role="tab" tabindex="0" aria-selected="false" data-tab="esg">ESG & trust</div>
+          <div class="tab" role="tab" tabindex="0" aria-selected="false" data-tab="risks">Key risks</div>
+        </div>
+
+        <div class="tabpanes">
+          <div class="pane active" id="sentiment">
+            <div class="callout">
+              <strong id="sentimentHeadline">—</strong>
+              <div class="small" id="sentimentBody">—</div>
+              <div class="meter" aria-label="Sentiment meter"><div id="sentimentMeter"></div></div>
+              <div class="small" style="margin-top:8px">
+                <span class="muted">Board prompts:</span>
+                <ul class="list" id="sentimentPrompts"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="pane" id="priorities">
+            <div class="split">
+              <div class="callout">
+                <strong>What leadership is signalling</strong>
+                <ul class="list" id="prioritySignals"></ul>
+              </div>
+              <div class="callout">
+                <strong>What the Board should test</strong>
+                <ul class="list" id="priorityTests"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="pane" id="esg">
+            <div class="split">
+              <div class="callout">
+                <strong>Commitments (public)</strong>
+                <ul class="list" id="esgCommitments"></ul>
+              </div>
+              <div class="callout">
+                <strong>Execution watch-outs</strong>
+                <ul class="list" id="esgWatchouts"></ul>
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="small">
+              <span class="muted">Regulatory readiness:</span> Ensure CSRD/ISSB plans are treated as strategic transformation (data, controls, assurance), not just reporting.
+            </div>
+          </div>
+
+          <div class="pane" id="risks">
+            <div class="callout">
+              <strong>3 board-level risks to track this quarter</strong>
+              <ol class="list" id="riskList"></ol>
+              <div class="hr"></div>
+              <div class="small"><span class="muted">Trigger indicators:</span> watch for sustained down-trading, persistent US/China weakness, and slippage in cost / cash milestones.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOWER LEFT: ACTIONS -->
+      <section class="card" data-tags="strategy risk financial" style="grid-column: 1 / -1;">
+        <div class="hd">
+          <h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Board actions tracker (editable)
+          </h2>
+          <span class="pill">Mark as done</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="callout">
+              <strong>Recommended Board actions (next 90 days)</strong>
+              <div class="small muted">These are intentionally “strategic not operational”. Edit to match your pack.</div>
+              <div class="hr"></div>
+              <label><input type="checkbox" class="chk" /> Reconfirm growth algorithm: volume resilience vs premium mix exposure</label><br/>
+              <label><input type="checkbox" class="chk" /> Approve Accelerate governance: milestones, reinvestment guardrails, cash targets</label><br/>
+              <label><input type="checkbox" class="chk" /> Stress-test tariff / FX and North America assumptions in FY26 guidance narrative</label><br/>
+              <label><input type="checkbox" class="chk" /> ESG: water & carbon execution plan aligned to capex and risk appetite</label><br/>
+              <label><input type="checkbox" class="chk" /> CEO succession: confirm criteria tied to performance delivery and culture</label>
+            </div>
+
+            <div class="callout">
+              <strong>Key questions to ask management</strong>
+              <ul class="list">
+                <li><span>Growth:</span> What is the plan if premiumisation stalls for 4–6 quarters?</li>
+                <li><span>Margins:</span> Which savings are structural vs timing, and how will we prove operating leverage?</li>
+                <li><span>Cash:</span> What are the top 3 working-capital levers and associated trade-offs?</li>
+                <li><span>ESG:</span> Where do water/climate risks create real financial exposure by geography?</li>
+                <li><span>Portfolio:</span> What assets are genuinely “non-core” and what is the disposal timetable?</li>
+              </ul>
+              <div class="hr"></div>
+              <div class="small muted">Use these as talking points in the meeting, or convert into formal Board resolutions / information requests.</div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <strong class="muted">How to use in a presentation:</strong> Save this file as <span class="mono">diageo-dashboard.html</span>, upload to a location accessible to your audience (SharePoint / internal site), then hyperlink a slide object to the URL/file.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /***********************
+     * CONFIG (EDIT HERE)
+     ***********************/
+    const CONFIG = {
+      asOf: "FY25 annual reporting (public) + live market link",
+      yahooFinanceUrl: "https://finance.yahoo.com/quote/DGE.L/",
+      kpis: [
+        {
+          tag: "financial",
+          label: "Reported net sales (FY25)",
+          value: "$20.2bn",
+          status: "warn",
+          note: "Scale remains strong; top-line growth is modest.",
+          boardPrompt: "What mix/volume assumptions underpin FY26 guidance and recovery timing?"
+        },
+        {
+          tag: "financial",
+          label: "Organic net sales growth (FY25)",
+          value: "+1.7%",
+          status: "warn",
+          note: "Growth positive but below historic algorithm.",
+          boardPrompt: "How are we protecting volume resilience while preserving premium equity?"
+        },
+        {
+          tag: "financial",
+          label: "Free cash flow (FY25)",
+          value: "$2.7bn",
+          status: "warn",
+          note: "Management targets c.$3bn sustainable FCF from FY26.",
+          boardPrompt: "What are the key risks to cash conversion (capex, WC, working inventory)?"
+        },
+        {
+          tag: "strategy",
+          label: "Accelerate programme",
+          value: "$625m",
+          status: "good",
+          note: "Targeted cost savings over 3 years (A&P, overheads, supply chain, trade).",
+          boardPrompt: "How will savings translate into operating leverage vs reinvestment?"
+        },
+        {
+          tag: "market",
+          label: "Dividend (full year)",
+          value: "103.48c",
+          status: "warn",
+          note: "Held flat in FY25 (prudence amid macro pressure).",
+          boardPrompt: "What is our dividend flexibility under downside scenarios?"
+        },
+        {
+          tag: "strategy",
+          label: "Portfolio scale",
+          value: "13",
+          status: "good",
+          note: "Billion-dollar brands; broad price ladder across categories.",
+          boardPrompt: "Which brands/geographies are structurally underperforming and why?"
+        }
+      ],
+      sentiment: {
+        headline: "Credibility hinges on consistent delivery (growth + cash + margins).",
+        body: "Public disclosures emphasise a tougher consumer backdrop and a renewed focus on cost and cash via Accelerate. Market attention is likely centred on proof points: sustained operating leverage, North America recovery trajectory, and capital allocation discipline.",
+        score: 58, // 0–100; purely illustrative slider for the dashboard
+        prompts: [
+          "How will management measure and communicate progress on Accelerate quarterly?",
+          "What is the plan if premiumisation demand weakens further?",
+          "Where is the clearest ‘near-term win’ to rebuild investor confidence?"
+        ]
+      },
+      priorities: {
+        signals: [
+          "Accelerate: disciplined cost management + consistent cash delivery targets.",
+          "Active portfolio management: selective disposals to improve flexibility.",
+          "Category/brand focus: tequila strength; Guinness momentum; Johnnie Walker recruitment emphasis.",
+          "Mitigating tariff exposure via supply chain actions and inventory management."
+        ],
+        tests: [
+          "Are savings structural (repeatable) vs one-off timing benefits?",
+          "Is reinvestment being prioritised to the highest ROIC opportunities?",
+          "Is leadership bandwidth sufficient given CEO/CFO transition and macro headwinds?",
+          "Does the strategy explicitly address moderation / no-alc profit pools and cannibalisation risk?"
+        ]
+      },
+      esg: {
+        commitments: [
+          "‘Spirit of Progress’ as the ESG action plan (trust, responsible drinking, sustainability).",
+          "Water stewardship: improving efficiency and replenishment focus in stressed basins.",
+          "Climate: refreshed science-based targets; pathway to net zero (execution dependent).",
+          "Reporting evolution: preparation for ISSB/CSRD; ongoing alignment with TCFD and progressing towards TNFD."
+        ],
+        watchouts: [
+          "Execution risk: delivery timelines and capex needs may rise under tighter regulation.",
+          "Credibility risk: claims scrutiny (e.g., voluntary carbon / offset disclosures) and assurance expectations.",
+          "Operational exposure: water stress in key production regions; supply chain impacts.",
+          "Regulatory: evolving alcohol marketing / labelling standards by market."
+        ]
+      },
+      risks: [
+        "Premiumisation dependence vs consumer down-trading (volume resilience at risk).",
+        "Operating leverage and cash delivery: failure to prove Accelerate milestones could pressure valuation.",
+        "ESG execution vs scrutiny: water and climate pathways under expanding reporting and assurance requirements."
+      ]
+    };
+
+    /***********************
+     * RENDER
+     ***********************/
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+
+    $("#asOf").textContent = `As of: ${CONFIG.asOf}`;
+    $("#yahooBtn").href = CONFIG.yahooFinanceUrl;
+
+    const kpiGrid = $("#kpiGrid");
+    const statusDot = (s)=> (s==="good" ? "good" : s==="bad" ? "bad" : "warn");
+
+    CONFIG.kpis.forEach((k, idx) => {
+      const div = document.createElement("button");
+      div.type = "button";
+      div.className = "kpi";
+      div.setAttribute("data-tags", k.tag);
+      div.style.textAlign = "left";
+      div.innerHTML = `
+        <div class="lbl">${k.label}</div>
+        <div class="val">${k.value}</div>
+        <div class="meta">
+          <span class="badge"><span class="dot ${statusDot(k.status)}"></span> ${k.status === "good" ? "Strength" : k.status === "bad" ? "Pressure" : "Watch"}</span>
+          <span class="badge mono">KPI ${String(idx+1).padStart(2,"0")}</span>
+        </div>
+        <div class="small" style="margin-top:6px;color:var(--muted)">${k.note}</div>
+      `;
+      div.addEventListener("click", () => {
+        toast(`${k.label}: ${k.note}  •  Board prompt: ${k.boardPrompt}`);
+      });
+      kpiGrid.appendChild(div);
+    });
+
+    // Sentiment
+    $("#sentimentHeadline").textContent = CONFIG.sentiment.headline;
+    $("#sentimentBody").textContent = CONFIG.sentiment.body;
+    $("#sentimentMeter").style.width = `${Math.max(0, Math.min(100, CONFIG.sentiment.score))}%`;
+    const promptsUl = $("#sentimentPrompts");
+    CONFIG.sentiment.prompts.forEach(p=>{
+      const li = document.createElement("li");
+      li.textContent = p;
+      promptsUl.appendChild(li);
+    });
+
+    // Priorities
+    const ps = $("#prioritySignals");
+    CONFIG.priorities.signals.forEach(x=>{
+      const li = document.createElement("li");
+      li.textContent = x;
+      ps.appendChild(li);
+    });
+    const pt = $("#priorityTests");
+    CONFIG.priorities.tests.forEach(x=>{
+      const li = document.createElement("li");
+      li.textContent = x;
+      pt.appendChild(li);
+    });
+
+    // ESG
+    const ec = $("#esgCommitments");
+    CONFIG.esg.commitments.forEach(x=>{
+      const li = document.createElement("li");
+      li.textContent = x;
+      ec.appendChild(li);
+    });
+    const ew = $("#esgWatchouts");
+    CONFIG.esg.watchouts.forEach(x=>{
+      const li = document.createElement("li");
+      li.textContent = x;
+      ew.appendChild(li);
+    });
+
+    // Risks
+    const rl = $("#riskList");
+    CONFIG.risks.forEach(x=>{
+      const li = document.createElement("li");
+      li.textContent = x;
+      rl.appendChild(li);
+    });
+
+    /***********************
+     * TABS
+     ***********************/
+    const tabs = $$(".tab");
+    tabs.forEach(t=>{
+      t.addEventListener("click", ()=>activateTab(t.dataset.tab));
+      t.addEventListener("keydown",(e)=>{
+        if(e.key==="Enter" || e.key===" "){ e.preventDefault(); activateTab(t.dataset.tab); }
+      });
+    });
+    function activateTab(id){
+      tabs.forEach(t=>{
+        const active = t.dataset.tab===id;
+        t.classList.toggle("active", active);
+        t.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      $$(".pane").forEach(p=>p.classList.toggle("active", p.id===id));
+    }
+
+    /***********************
+     * FILTER CHIPS
+     ***********************/
+    const chips = $$(".chip");
+    chips.forEach(c=>c.addEventListener("click", ()=>{
+      chips.forEach(x=>x.classList.remove("active"));
+      c.classList.add("active");
+      const f = c.dataset.filter;
+      $$("[data-tags]").forEach(card=>{
+        const tags = (card.getAttribute("data-tags") || "").split(/\s+/).filter(Boolean);
+        const show = (f==="all") || tags.includes(f);
+        card.style.display = show ? "" : "none";
+      });
+      toast(`Filter applied: ${f.toUpperCase()}`);
+    }));
+
+    /***********************
+     * COPY LINK
+     ***********************/
+    $("#copyLinkBtn").addEventListener("click", async ()=>{
+      try{
+        const url = window.location.href;
+        await navigator.clipboard.writeText(url);
+        toast("Link copied to clipboard.");
+      }catch(err){
+        toast("Unable to copy automatically. Please copy the address bar URL.");
+      }
+    });
+
+    /***********************
+     * TOAST
+     ***********************/
+    let toastTimer = null;
+    function toast(msg){
+      const el = $("#toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>el.classList.remove("show"), 3200);
+    }
+  </script>
+</body>
+</html>
