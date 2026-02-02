@@ -3,122 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Diageo – Board Dashboard (Public Info Snapshot)</title>
+  <title>Diageo – Board Dashboard</title>
 
-  <!--
-    FONT (LEMONMILK)
-    Place LEMONMILK-Medium.otf in the SAME folder as this HTML file.
-    (You uploaded it as /mnt/data/LEMONMILK-Medium.otf in your workspace; export/copy it next to this HTML.)
-  -->
+  <!-- LEMONMILK FONT (place file beside index.html) -->
   <style>
     @font-face{
-      font-family: "LEMONMILK";
-      src: url("LEMONMILK-Medium.otf") format("opentype");
-      font-weight: 500;
-      font-style: normal;
-      font-display: swap;
+      font-family:"LEMONMILK";
+      src:url("LEMONMILK-Medium.otf") format("opentype");
+      font-weight:500;
+      font-style:normal;
+      font-display:swap;
     }
 
     :root{
-      /* Annual-report-ish palette: bright, editorial, airy (no dark blue background) */
-      --paper:#f6f4fb;         /* soft lilac/grey paper */
-      --paper2:#ffffff;
-      --ink:#14162a;           /* near-black for light background */
+      --paper:#f6f4fb;
+      --panel:#ffffff;
+      --ink:#14162a;
       --muted:#5c6286;
-      --line: rgba(20,22,42,.12);
+      --line:rgba(20,22,42,.12);
 
       --pink:#e6007e;
       --violet:#6f46ff;
       --sky:#5aa7ff;
-      --teal:#35c8c1;
-
-      --panel:#ffffff;
-      --shadow: 0 10px 28px rgba(20,22,42,.10);
-      --shadow2: 0 18px 42px rgba(20,22,42,.12);
-      --radius: 18px;
-
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      --hdr: "LEMONMILK", var(--sans);
 
       --good:#1aa865;
       --warn:#c08a00;
       --bad:#d92652;
+
+      --radius:18px;
+      --shadow:0 10px 28px rgba(20,22,42,.10);
+
+      --hdr:"LEMONMILK", system-ui, sans-serif;
+      --body:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family:var(--sans);
+      font-family:var(--body);
+      font-size:14px;
+      line-height:1.5;
       color:var(--ink);
       background:
         radial-gradient(900px 560px at 15% -10%, rgba(111,70,255,.18), transparent 60%),
         radial-gradient(900px 560px at 100% 0%, rgba(230,0,126,.14), transparent 60%),
-        radial-gradient(900px 560px at 30% 110%, rgba(90,167,255,.12), transparent 60%),
         var(--paper);
     }
 
-    a{color:inherit}
     .wrap{
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 18px 18px 28px;
+      max-width:1240px;
+      margin:0 auto;
+      padding:18px 18px 28px;
     }
 
-    /* Top masthead inspired by Annual Report: editorial band + diagonal colour */
+    /* ================= HEADER ================= */
     .masthead{
-      position:relative;
-      border-radius: 22px;
-      overflow:hidden;
-      background: var(--paper2);
-      box-shadow: var(--shadow2);
-      border: 1px solid rgba(20,22,42,.08);
-      padding: 16px 16px 14px;
-      margin-bottom: 14px;
+      background:#fff;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      border:1px solid var(--line);
+      padding:16px;
+      margin-bottom:16px;
     }
-    .masthead:before{
-      content:"";
-      position:absolute; inset:-80px -120px auto auto;
-      width: 520px; height: 260px;
-      transform: rotate(12deg);
-      background: linear-gradient(90deg, rgba(230,0,126,.18), rgba(111,70,255,.16), rgba(90,167,255,.10));
-      border-radius: 200px;
-      filter: blur(0px);
-      pointer-events:none;
-    }
+
     .topbar{
-      position:relative;
       display:flex;
-      gap:14px;
-      align-items:flex-start;
+      gap:16px;
       justify-content:space-between;
       flex-wrap:wrap;
     }
+
     .brand{
-      display:flex; gap:12px; align-items:center;
-      min-width: 280px;
+      display:flex;
+      gap:12px;
+      align-items:center;
     }
-    .brand img{
-      height: 26px;
-      width:auto;
-      display:block;
-    }
-    .brand .meta{
-      display:flex; flex-direction:column; gap:4px;
-    }
-    .brand .meta h1{
-      margin:0;
+
+    .brand img{height:26px}
+
+    .brand h1{
       font-family:var(--hdr);
-      font-size: 18px;
+      font-size:18px;
       letter-spacing:.6px;
-      line-height:1.15;
+      margin:0;
     }
-    .brand .meta .sub{
+
+    .brand .sub{
+      font-size:12.5px;
       color:var(--muted);
-      font-size: 12.5px;
-      line-height: 1.35;
-      max-width: 720px;
+      max-width:720px;
     }
 
     .controls{
@@ -126,810 +100,332 @@
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
-      justify-content:flex-end;
     }
+
     .pill{
-      font-size: 11px;
-      color: rgba(20,22,42,.78);
-      border: 1px solid rgba(20,22,42,.14);
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.75);
-      backdrop-filter: blur(6px);
-      white-space:nowrap;
-    }
-
-    .chipRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:flex-end;
-    }
-    .chip{
-      border:1px solid rgba(20,22,42,.12);
-      padding:8px 10px;
+      font-size:11px;
+      padding:7px 10px;
       border-radius:999px;
-      background: rgba(255,255,255,.78);
-      font-size:12px;
-      color: rgba(20,22,42,.78);
-      cursor:pointer;
-      user-select:none;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-    }
-    .chip:hover{
-      transform: translateY(-1px);
-      border-color: rgba(230,0,126,.25);
-      background: rgba(255,255,255,.92);
-    }
-    .chip.active{
-      border-color: rgba(230,0,126,.55);
-      background: rgba(230,0,126,.08);
-      color: rgba(20,22,42,.92);
-      font-weight: 600;
+      border:1px solid var(--line);
+      background:#fff;
     }
 
-    .logoSwitch{
-      display:flex; gap:6px; flex-wrap:wrap;
-      padding:6px;
-      border-radius: 14px;
-      border:1px solid rgba(20,22,42,.10);
-      background: rgba(255,255,255,.8);
-      backdrop-filter: blur(6px);
-    }
-    .logoBtn{
-      cursor:pointer;
-      border-radius: 12px;
-      border:1px solid rgba(20,22,42,.12);
-      background: rgba(255,255,255,.9);
-      padding: 8px 10px;
-      font-size: 12px;
-      color: rgba(20,22,42,.78);
-      transition: transform .12s ease, border-color .12s ease, background .12s ease;
-    }
-    .logoBtn:hover{transform: translateY(-1px); border-color: rgba(111,70,255,.28)}
-    .logoBtn.active{
-      border-color: rgba(111,70,255,.55);
-      background: rgba(111,70,255,.08);
-      color: rgba(20,22,42,.92);
-      font-weight:600;
-    }
-
-    /* Layout: fill space without squashing */
+    /* ================= LAYOUT ================= */
     .grid{
       display:grid;
-      gap: 14px;
-      grid-template-columns: 1.25fr .9fr;
-      align-items:stretch;
+      grid-template-columns:1.25fr .9fr;
+      gap:16px;
     }
-    @media (max-width: 980px){
+
+    @media(max-width:980px){
       .grid{grid-template-columns:1fr}
-      .chipRow{justify-content:flex-start}
-      .controls{justify-content:flex-start}
     }
 
     .card{
-      background: var(--panel);
-      border: 1px solid rgba(20,22,42,.10);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      background:var(--panel);
+      border-radius:var(--radius);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .card .hd{
-      padding: 12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      background:
-        linear-gradient(90deg, rgba(230,0,126,.08), rgba(111,70,255,.06), rgba(90,167,255,.04));
-      border-bottom: 1px solid rgba(20,22,42,.08);
-    }
-    .card .hd .hgroup{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-    .card .hd img{
-      height: 18px;
-      width:auto;
-      display:block;
-      opacity:.95;
-    }
-    .card .hd h2{
-      margin:0;
-      font-family: var(--hdr);
-      font-size: 13.5px;
-      letter-spacing:.7px;
-      line-height: 1.1;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .card .bd{padding: 12px 14px}
 
+    .card .hd{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      background:linear-gradient(
+        90deg,
+        rgba(230,0,126,.08),
+        rgba(111,70,255,.06)
+      );
+      border-bottom:1px solid var(--line);
+    }
+
+    .card .hd h2{
+      font-family:var(--hdr);
+      font-size:13.5px;
+      letter-spacing:.6px;
+      margin:0;
+    }
+
+    .card .bd{
+      padding:16px;
+    }
+
+    /* ================= KPI GRID ================= */
     .kpis{
       display:grid;
-      gap: 12px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
     }
-    @media (max-width: 860px){
-      .kpis{grid-template-columns: repeat(2, minmax(0, 1fr));}
+
+    @media(max-width:860px){
+      .kpis{grid-template-columns:repeat(2,1fr)}
     }
-    @media (max-width: 560px){
-      .kpis{grid-template-columns: 1fr;}
+    @media(max-width:560px){
+      .kpis{grid-template-columns:1fr}
     }
 
     .kpi{
-      background: rgba(246,244,251,.9);
-      border:1px solid rgba(20,22,42,.10);
-      border-radius: 16px;
-      padding: 12px 12px 11px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      min-height: 102px;
+      background:#faf9fd;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
       cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      text-align:left;
     }
-    .kpi:hover{
-      transform: translateY(-1px);
-      border-color: rgba(230,0,126,.24);
-      box-shadow: 0 12px 26px rgba(20,22,42,.10);
+
+    .kpi .lbl{
+      font-size:11.5px;
+      color:var(--muted);
     }
-    .kpi .lbl{color: rgba(20,22,42,.72); font-size: 11.5px}
-    .kpi .val{font-size: 22px; font-weight: 900; letter-spacing:.2px}
-    .kpi .meta{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+
+    .kpi .val{
+      font-size:22px;
+      font-weight:800;
+      margin:4px 0 6px;
+    }
 
     .badge{
-      display:inline-flex; gap:6px; align-items:center;
-      font-size: 11px;
-      border-radius: 999px;
-      padding: 6px 8px;
-      border:1px solid rgba(20,22,42,.12);
-      background: rgba(255,255,255,.78);
-      color: rgba(20,22,42,.72);
-    }
-    .dot{width:8px;height:8px;border-radius:50%}
-    .dot.good{background: var(--good)}
-    .dot.warn{background: var(--warn)}
-    .dot.bad{background: var(--bad)}
-    .mono{font-family: var(--mono)}
-
-    .row{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      margin-top: 12px;
-    }
-    .small{font-size: 12px; color: var(--muted); line-height: 1.4}
-
-    .btns{display:flex; gap:8px; flex-wrap:wrap}
-    .btn{
-      appearance:none;
-      border:1px solid rgba(20,22,42,.12);
-      background: rgba(255,255,255,.92);
-      color: rgba(20,22,42,.88);
-      border-radius: 14px;
-      padding: 10px 11px;
-      font-size: 12px;
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      text-decoration:none;
       display:inline-flex;
       align-items:center;
-      gap: 8px;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(111,70,255,.30);
-      background: #fff;
-    }
-    .btn.primary{
-      border-color: rgba(230,0,126,.40);
-      background: rgba(230,0,126,.08);
+      gap:6px;
+      font-size:11px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
     }
 
-    .spark{
-      width:100%;
-      height: 68px;
-      margin-top: 10px;
-      border-radius: 16px;
-      border:1px solid rgba(20,22,42,.10);
-      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(246,244,251,.85));
-      padding: 10px;
+    .dot{
+      width:8px;height:8px;border-radius:50%;
     }
-    .spark svg{width:100%;height:100%}
-    .legend{display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px}
+    .good{background:var(--good)}
+    .warn{background:var(--warn)}
+    .bad{background:var(--bad)}
 
+    /* ================= CALLOUTS ================= */
+    .callout{
+      background:#faf9fd;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .callout strong{
+      font-family:var(--hdr);
+      font-size:13px;
+      letter-spacing:.5px;
+      display:block;
+      margin-bottom:10px;
+    }
+
+    .list{
+      margin:0;
+      padding-left:18px;
+    }
+
+    .list li{
+      font-size:13px;
+      line-height:1.55;
+      margin:10px 0;
+    }
+
+    .list li span{
+      font-weight:600;
+      color:var(--muted);
+    }
+
+    /* ================= TABS ================= */
     .tabs{
       display:flex;
       gap:8px;
-      flex-wrap:wrap;
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(20,22,42,.08);
-      background: rgba(246,244,251,.75);
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      background:#f9f8fc;
     }
+
     .tab{
-      font-size: 12px;
-      color: rgba(20,22,42,.72);
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(20,22,42,.10);
-      background: rgba(255,255,255,.84);
+      font-size:12px;
+      padding:8px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
       cursor:pointer;
-      transition: background .12s ease, border-color .12s ease, transform .12s ease;
-      user-select:none;
     }
-    .tab:hover{transform: translateY(-1px); border-color: rgba(230,0,126,.20)}
+
     .tab.active{
-      color: rgba(20,22,42,.92);
-      border-color: rgba(230,0,126,.45);
-      background: rgba(230,0,126,.08);
-      font-weight: 600;
+      background:rgba(230,0,126,.08);
+      border-color:rgba(230,0,126,.45);
+      font-weight:600;
     }
-    .tabpanes{padding: 12px 14px}
+
     .pane{display:none}
     .pane.active{display:block}
 
     .split{
       display:grid;
-      gap: 12px;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
     }
-    @media (max-width: 720px){
+
+    @media(max-width:720px){
       .split{grid-template-columns:1fr}
     }
-    .callout{
-      padding: 12px 12px;
-      border-radius: 16px;
-      border:1px solid rgba(20,22,42,.10);
-      background: rgba(246,244,251,.80);
+
+    .hr{
+      height:1px;
+      background:var(--line);
+      margin:14px 0;
     }
-    .callout strong{
+
+    /* ================= CHECKLIST ================= */
+    label{
       display:block;
-      margin-bottom: 6px;
-      font-family: var(--hdr);
-      letter-spacing:.5px;
-      font-size: 12.8px;
-    }
-    .list{margin:0; padding-left: 18px}
-    .list li{margin: 6px 0; color: rgba(20,22,42,.90)}
-    .list li span{color: var(--muted)}
-    .hr{height:1px; background: rgba(20,22,42,.10); margin: 10px 0}
-
-    .meter{
-      margin-top: 10px;
-      border-radius: 999px;
-      height: 10px;
-      background: rgba(20,22,42,.10);
-      overflow:hidden;
-      border:1px solid rgba(20,22,42,.10);
-    }
-    .meter > div{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(230,0,126,.85), rgba(111,70,255,.75), rgba(90,167,255,.65));
-      transition: width .6s ease;
+      margin:12px 0;
+      font-size:13px;
+      line-height:1.5;
     }
 
+    /* ================= FOOTER ================= */
     .footer{
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 11.5px;
-      line-height: 1.45;
-    }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom: 18px;
-      transform:translateX(-50%);
-      background: rgba(255,255,255,.96);
-      border: 1px solid rgba(20,22,42,.12);
-      padding: 10px 12px;
-      border-radius: 14px;
-      color: rgba(20,22,42,.92);
-      font-size: 12px;
-      box-shadow: var(--shadow2);
-      display:none;
-      max-width: min(860px, calc(100% - 24px));
-    }
-    .toast.show{display:block;animation:pop .16s ease}
-    @keyframes pop{
-      from{transform:translateX(-50%) translateY(8px);opacity:0}
-      to{transform:translateX(-50%) translateY(0);opacity:1}
-    }
-
-    /* No "empty space": ensure section height breathes but remains filled */
-    .fillCard{
-      min-height: 380px;
+      margin-top:16px;
+      font-size:11.5px;
+      color:var(--muted);
     }
   </style>
 </head>
-<body>
-  <div class="wrap">
 
-    <section class="masthead">
-      <div class="topbar">
-        <div class="brand">
-          <img id="logoTop" alt="Diageo logo" />
-          <div class="meta">
-            <h1>BOARD DASHBOARD</h1>
-            <div class="sub">
-              Current performance snapshot for board packs. Uses FY24/FY25 public disclosures + live market link.
-              Edit values in the <span class="mono">CONFIG</span> section.
-            </div>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <section class="masthead">
+    <div class="topbar">
+      <div class="brand">
+        <img src="https://static.wixstatic.com/media/a66fd3_e56f6661ad914439a598dc99338f27c9~mv2.png" alt="Diageo logo">
+        <div>
+          <h1>BOARD DASHBOARD</h1>
+          <div class="sub">
+            Current performance snapshot for board packs — public information only.
           </div>
         </div>
+      </div>
+      <span class="pill">FY25 public data</span>
+    </div>
+  </section>
 
-        <div class="controls">
-          <span class="pill" id="asOf">As of: —</span>
+  <!-- MAIN GRID -->
+  <div class="grid">
 
-          <div class="logoSwitch" aria-label="Logo colour selector">
-            <button class="logoBtn active" type="button" data-logo="pink">Pink logo</button>
-            <button class="logoBtn" type="button" data-logo="black">Black logo</button>
-            <button class="logoBtn" type="button" data-logo="white">White logo</button>
+    <!-- KPI PANEL -->
+    <section class="card">
+      <div class="hd">
+        <h2>Performance snapshot</h2>
+      </div>
+      <div class="bd">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="lbl">Reported net sales (FY25)</div>
+            <div class="val">$20.2bn</div>
+            <span class="badge"><span class="dot warn"></span> Watch</span>
           </div>
-
-          <div class="chipRow" id="chips">
-            <div class="chip active" data-filter="all">All</div>
-            <div class="chip" data-filter="financial">Financial</div>
-            <div class="chip" data-filter="market">Market</div>
-            <div class="chip" data-filter="strategy">Strategy</div>
-            <div class="chip" data-filter="esg">ESG</div>
-            <div class="chip" data-filter="risk">Risks</div>
+          <div class="kpi">
+            <div class="lbl">Organic net sales growth</div>
+            <div class="val">+1.7%</div>
+            <span class="badge"><span class="dot warn"></span> Watch</span>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Free cash flow</div>
+            <div class="val">$2.7bn</div>
+            <span class="badge"><span class="dot warn"></span> Watch</span>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="grid">
-      <!-- LEFT -->
-      <section class="card fillCard" data-tags="financial market">
-        <div class="hd">
-          <div class="hgroup">
-            <img class="logoHdr" alt="Diageo logo" />
-            <h2>Performance snapshot</h2>
-          </div>
-          <span class="pill">Click any KPI tile</span>
-        </div>
-        <div class="bd">
-          <div class="kpis" id="kpiGrid"></div>
+    <!-- TABS PANEL -->
+    <section class="card">
+      <div class="hd">
+        <h2>Board focus areas</h2>
+      </div>
 
-          <div class="row">
-            <div class="small">
-              KPI tiles are clickable—each reveals a board prompt.
-            </div>
-            <div class="btns">
-              <a class="btn primary" id="yahooBtn" target="_blank" rel="noopener">Open share price (Yahoo Finance)</a>
-              <button class="btn" id="copyLinkBtn" type="button">Copy link</button>
-            </div>
-          </div>
+      <div class="tabs">
+        <div class="tab active" onclick="showTab(0)">Investor sentiment</div>
+        <div class="tab" onclick="showTab(1)">Strategic priorities</div>
+        <div class="tab" onclick="showTab(2)">ESG & trust</div>
+        <div class="tab" onclick="showTab(3)">Key risks</div>
+      </div>
 
-          <div class="spark" aria-label="Illustrative trend sparkline (editable)">
-            <svg viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-label="Illustrative trend line">
-              <defs>
-                <linearGradient id="g1" x1="0" x2="1">
-                  <stop offset="0" stop-color="#e6007e" stop-opacity="0.85"/>
-                  <stop offset="0.55" stop-color="#6f46ff" stop-opacity="0.70"/>
-                  <stop offset="1" stop-color="#5aa7ff" stop-opacity="0.55"/>
-                </linearGradient>
-              </defs>
-              <path d="M0,28 L10,26 L20,25 L30,27 L40,24 L50,23 L60,25 L70,21 L80,20 L90,19 L100,18"
-                    fill="none" stroke="url(#g1)" stroke-width="2.4" />
-              <path d="M0,40 L0,28 L10,26 L20,25 L30,27 L40,24 L50,23 L60,25 L70,21 L80,20 L90,19 L100,18 L100,40 Z"
-                    fill="url(#g1)" opacity="0.14"/>
-            </svg>
-          </div>
-          <div class="legend">
-            <span class="badge"><span class="dot good"></span> Positive momentum</span>
-            <span class="badge"><span class="dot warn"></span> Mixed / watch</span>
-            <span class="badge"><span class="dot bad"></span> Pressure</span>
-          </div>
-
-          <div class="footer">
-            <strong>Presentation tip:</strong> Save as <span class="mono">diageo-dashboard.html</span> and hyperlink a slide object to the file/URL.
+      <div class="bd">
+        <div class="pane active">
+          <div class="callout">
+            <strong>Market view</strong>
+            Valuation sensitivity is now driven by delivery credibility — growth, cash, and operating leverage.
           </div>
         </div>
-      </section>
 
-      <!-- RIGHT -->
-      <section class="card fillCard" data-tags="strategy esg risk">
-        <div class="hd">
-          <div class="hgroup">
-            <img class="logoHdr" alt="Diageo logo" />
-            <h2>Board discussion cockpit</h2>
-          </div>
-          <span class="pill">Switch tabs</span>
-        </div>
-
-        <div class="tabs" role="tablist" aria-label="Dashboard tabs">
-          <div class="tab active" role="tab" tabindex="0" aria-selected="true" data-tab="sentiment">Investor sentiment</div>
-          <div class="tab" role="tab" tabindex="0" aria-selected="false" data-tab="priorities">Strategic priorities</div>
-          <div class="tab" role="tab" tabindex="0" aria-selected="false" data-tab="esgPane">ESG & trust</div>
-          <div class="tab" role="tab" tabindex="0" aria-selected="false" data-tab="risks">Key risks</div>
-        </div>
-
-        <div class="tabpanes">
-          <div class="pane active" id="sentiment">
-            <div class="callout">
-              <strong id="sentimentHeadline">—</strong>
-              <div class="small" id="sentimentBody">—</div>
-              <div class="meter" aria-label="Sentiment meter"><div id="sentimentMeter"></div></div>
-              <div class="small" style="margin-top:10px">
-                <span style="color:var(--muted)">Board prompts:</span>
-                <ul class="list" id="sentimentPrompts"></ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="pane" id="priorities">
-            <div class="split">
-              <div class="callout">
-                <strong>What leadership is signalling</strong>
-                <ul class="list" id="prioritySignals"></ul>
-              </div>
-              <div class="callout">
-                <strong>What the Board should test</strong>
-                <ul class="list" id="priorityTests"></ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="pane" id="esgPane">
-            <div class="split">
-              <div class="callout">
-                <strong>Commitments (public)</strong>
-                <ul class="list" id="esgCommitments"></ul>
-              </div>
-              <div class="callout">
-                <strong>Execution watch-outs</strong>
-                <ul class="list" id="esgWatchouts"></ul>
-              </div>
-            </div>
-            <div class="hr"></div>
-            <div class="small">
-              <span style="color:var(--muted)">Reporting readiness:</span>
-              Treat CSRD/ISSB as a controls & assurance upgrade (data lineage, internal controls, auditability), not simply disclosure.
-            </div>
-          </div>
-
-          <div class="pane" id="risks">
-            <div class="callout">
-              <strong>3 board-level risks to track this quarter</strong>
-              <ol class="list" id="riskList"></ol>
-              <div class="hr"></div>
-              <div class="small">
-                <span style="color:var(--muted)">Trigger indicators:</span>
-                sustained down-trading, prolonged US/China weakness, and slippage in cost/cash milestones.
-              </div>
-            </div>
+        <div class="pane">
+          <div class="callout">
+            <strong>Leadership signals</strong>
+            Cost discipline, portfolio focus, and Accelerate execution dominate messaging.
           </div>
         </div>
-      </section>
 
-      <!-- FULL WIDTH -->
-      <section class="card" data-tags="strategy risk financial" style="grid-column: 1 / -1;">
-        <div class="hd">
-          <div class="hgroup">
-            <img class="logoHdr" alt="Diageo logo" />
-            <h2>Board actions tracker (editable)</h2>
-          </div>
-          <span class="pill">Mark items as done</span>
-        </div>
-        <div class="bd">
-          <div class="split">
-            <div class="callout">
-              <strong>Recommended Board actions (next 90 days)</strong>
-              <div class="small" style="margin-top:4px">Strategic, not operational — edit to match your pack.</div>
-              <div class="hr"></div>
-              <label><input type="checkbox" class="chk" /> Reconfirm growth algorithm: volume resilience vs premium mix exposure</label><br/>
-              <label><input type="checkbox" class="chk" /> Approve Accelerate governance: milestones, reinvestment guardrails, cash targets</label><br/>
-              <label><input type="checkbox" class="chk" /> Stress-test tariff / FX and North America assumptions in FY26 narrative</label><br/>
-              <label><input type="checkbox" class="chk" /> ESG: water & carbon execution plan aligned to capex and risk appetite</label><br/>
-              <label><input type="checkbox" class="chk" /> CEO succession: criteria linked to performance delivery and culture</label>
-            </div>
-
-            <div class="callout">
-              <strong>Key questions to ask management</strong>
-              <ul class="list">
-                <li><span>Growth:</span> What is the plan if premiumisation stalls for 4–6 quarters?</li>
-                <li><span>Margins:</span> Which savings are structural vs timing, and how will we prove operating leverage?</li>
-                <li><span>Cash:</span> What are the top 3 working-capital levers and trade-offs?</li>
-                <li><span>ESG:</span> Where do water/climate risks create financial exposure by geography?</li>
-                <li><span>Portfolio:</span> What assets are “non-core” and what is the disposal timetable?</li>
-              </ul>
-              <div class="hr"></div>
-              <div class="small">Convert these into formal Board information requests if needed.</div>
-            </div>
-          </div>
-
-          <div class="footer">
-            <strong>Layout note:</strong> This layout is intentionally “filled” (no dead space) while keeping cards breathable and readable.
+        <div class="pane">
+          <div class="callout">
+            <strong>ESG execution</strong>
+            Water and climate pathways face increasing regulatory and assurance scrutiny.
           </div>
         </div>
-      </section>
-    </div>
+
+        <div class="pane">
+          <div class="callout">
+            <strong>3 board-level risks this quarter</strong>
+            <ol class="list">
+              <li>Premiumisation dependence vs consumer down-trading.</li>
+              <li>Failure to prove Accelerate milestones and operating leverage.</li>
+              <li>ESG execution risk under expanding reporting requirements.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIONS -->
+    <section class="card" style="grid-column:1/-1">
+      <div class="hd">
+        <h2>Board actions tracker (next 90 days)</h2>
+      </div>
+      <div class="bd split">
+        <div class="callout">
+          <strong>Recommended actions</strong>
+          <label><input type="checkbox"> Reconfirm growth algorithm and volume resilience</label>
+          <label><input type="checkbox"> Approve Accelerate governance and milestones</label>
+          <label><input type="checkbox"> Stress-test FY26 assumptions (FX, tariffs, NA)</label>
+          <label><input type="checkbox"> Align ESG execution with capex and risk appetite</label>
+        </div>
+
+        <div class="callout">
+          <strong>Key questions to management</strong>
+          <ul class="list">
+            <li><span>Growth:</span> What if premiumisation stalls for 4–6 quarters?</li>
+            <li><span>Margins:</span> Which savings are structural vs timing?</li>
+            <li><span>Cash:</span> Top three working-capital levers?</li>
+            <li><span>Portfolio:</span> What is truly non-core?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
   </div>
+</div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    /***********************
-     * CONFIG (EDIT HERE)
-     ***********************/
-    const CONFIG = {
-      asOf: "FY25 annual reporting (public) + live market link",
-      yahooFinanceUrl: "https://finance.yahoo.com/quote/DGE.L/",
-
-      logos: {
-        black: "https://static.wixstatic.com/media/a66fd3_96575c2e0a2d401ea16fdff09a548349~mv2.png",
-        pink:  "https://static.wixstatic.com/media/a66fd3_e56f6661ad914439a598dc99338f27c9~mv2.png",
-        white: "https://static.wixstatic.com/media/a66fd3_04c21db6a0ec427ab329ae811276d7b7~mv2.png"
-      },
-
-      /* Default logo for light backgrounds */
-      defaultLogo: "pink",
-
-      kpis: [
-        {
-          tag: "financial",
-          label: "Reported net sales (FY25)",
-          value: "$20.2bn",
-          status: "warn",
-          note: "Scale remains strong; top-line growth is modest.",
-          boardPrompt: "What mix/volume assumptions underpin FY26 guidance and recovery timing?"
-        },
-        {
-          tag: "financial",
-          label: "Organic net sales growth (FY25)",
-          value: "+1.7%",
-          status: "warn",
-          note: "Growth positive but below historic algorithm.",
-          boardPrompt: "How are we protecting volume resilience while preserving premium equity?"
-        },
-        {
-          tag: "financial",
-          label: "Free cash flow (FY25)",
-          value: "$2.7bn",
-          status: "warn",
-          note: "Management targets c.$3bn sustainable FCF from FY26.",
-          boardPrompt: "What are the key risks to cash conversion (capex, working capital, maturing inventory)?"
-        },
-        {
-          tag: "strategy",
-          label: "Accelerate programme",
-          value: "$625m",
-          status: "good",
-          note: "Targeted cost savings over 3 years (A&P, overheads, supply chain, trade).",
-          boardPrompt: "How will savings translate into operating leverage vs reinvestment?"
-        },
-        {
-          tag: "market",
-          label: "Dividend (full year)",
-          value: "103.48c",
-          status: "warn",
-          note: "Held flat (prudence amid macro pressure).",
-          boardPrompt: "What is our dividend flexibility under downside scenarios?"
-        },
-        {
-          tag: "strategy",
-          label: "Portfolio scale",
-          value: "13",
-          status: "good",
-          note: "Billion-dollar brands; broad price ladder across categories.",
-          boardPrompt: "Which brands/geographies are structurally underperforming and why?"
-        }
-      ],
-
-      sentiment: {
-        headline: "Credibility hinges on consistent delivery (growth + cash + margins).",
-        body: "Public disclosures emphasise tougher consumer conditions and a renewed focus on cost and cash via Accelerate. Market attention is likely centred on proof points: sustained operating leverage, North America recovery trajectory, and capital allocation discipline.",
-        score: 58, // 0–100 (visual indicator)
-        prompts: [
-          "How will progress on Accelerate be evidenced quarter-by-quarter?",
-          "What is the plan if premiumisation weakens further?",
-          "Where is the clearest near-term win to rebuild investor confidence?"
-        ]
-      },
-
-      priorities: {
-        signals: [
-          "Accelerate: disciplined cost management + consistent cash delivery targets.",
-          "Active portfolio management: selective disposals to improve flexibility.",
-          "Category/brand focus: tequila strength; Guinness momentum; Johnnie Walker recruitment emphasis.",
-          "Mitigating tariff exposure via supply chain actions and inventory management."
-        ],
-        tests: [
-          "Are savings structural (repeatable) vs one-off timing benefits?",
-          "Is reinvestment being prioritised to the highest ROIC opportunities?",
-          "Is leadership bandwidth sufficient given CEO/CFO transition and macro headwinds?",
-          "Does the strategy explicitly address moderation / no-alc profit pools and cannibalisation risk?"
-        ]
-      },
-
-      esg: {
-        commitments: [
-          "‘Spirit of Progress’ as the ESG action plan (trust, responsible drinking, sustainability).",
-          "Water stewardship: improving efficiency and replenishment focus in stressed basins.",
-          "Climate: refreshed science-based targets; pathway to net zero (execution dependent).",
-          "Preparation for ISSB/CSRD; ongoing alignment with TCFD and progressing towards TNFD."
-        ],
-        watchouts: [
-          "Execution risk: timelines and capex needs may rise under tighter regulation.",
-          "Claims scrutiny: voluntary carbon / offsets disclosure expectations increasing.",
-          "Operational exposure: water stress in key production regions; supply chain impacts.",
-          "Regulatory: evolving alcohol marketing / labelling standards by market."
-        ]
-      },
-
-      risks: [
-        "Premiumisation dependence vs consumer down-trading (volume resilience at risk).",
-        "Operating leverage and cash delivery: failure to prove Accelerate milestones could pressure valuation.",
-        "ESG execution vs scrutiny: water and climate pathways under expanding reporting and assurance requirements."
-      ]
-    };
-
-    /***********************
-     * HELPERS
-     ***********************/
-    const $ = (sel, el=document) => el.querySelector(sel);
-    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
-
-    const statusDot = (s)=> (s==="good" ? "good" : s==="bad" ? "bad" : "warn");
-
-    /***********************
-     * LOGOS (headers)
-     ***********************/
-    function applyLogo(theme){
-      const url = CONFIG.logos[theme] || CONFIG.logos[CONFIG.defaultLogo];
-      $("#logoTop").src = url;
-      $$(".logoHdr").forEach(img => img.src = url);
-
-      $$(".logoBtn").forEach(b => b.classList.toggle("active", b.dataset.logo === theme));
-      toast(`Logo set to: ${theme.toUpperCase()}`);
-    }
-
-    $$(".logoBtn").forEach(btn=>{
-      btn.addEventListener("click", ()=>applyLogo(btn.dataset.logo));
-    });
-
-    /***********************
-     * RENDER
-     ***********************/
-    $("#asOf").textContent = `As of: ${CONFIG.asOf}`;
-    $("#yahooBtn").href = CONFIG.yahooFinanceUrl;
-
-    // KPI tiles
-    const kpiGrid = $("#kpiGrid");
-    CONFIG.kpis.forEach((k, idx) => {
-      const div = document.createElement("button");
-      div.type = "button";
-      div.className = "kpi";
-      div.setAttribute("data-tags", k.tag);
-      div.innerHTML = `
-        <div class="lbl">${k.label}</div>
-        <div class="val">${k.value}</div>
-        <div class="meta">
-          <span class="badge"><span class="dot ${statusDot(k.status)}"></span> ${k.status==="good" ? "Strength" : k.status==="bad" ? "Pressure" : "Watch"}</span>
-          <span class="badge mono">KPI ${String(idx+1).padStart(2,"0")}</span>
-        </div>
-        <div class="small" style="margin-top:6px">${k.note}</div>
-      `;
-      div.addEventListener("click", () => {
-        toast(`${k.label}: ${k.note}  •  Board prompt: ${k.boardPrompt}`);
-      });
-      kpiGrid.appendChild(div);
-    });
-
-    // Sentiment
-    $("#sentimentHeadline").textContent = CONFIG.sentiment.headline;
-    $("#sentimentBody").textContent = CONFIG.sentiment.body;
-    $("#sentimentMeter").style.width = `${Math.max(0, Math.min(100, CONFIG.sentiment.score))}%`;
-    const promptsUl = $("#sentimentPrompts");
-    CONFIG.sentiment.prompts.forEach(p=>{
-      const li = document.createElement("li");
-      li.textContent = p;
-      promptsUl.appendChild(li);
-    });
-
-    // Priorities
-    CONFIG.priorities.signals.forEach(x=>{
-      const li = document.createElement("li");
-      li.textContent = x;
-      $("#prioritySignals").appendChild(li);
-    });
-    CONFIG.priorities.tests.forEach(x=>{
-      const li = document.createElement("li");
-      li.textContent = x;
-      $("#priorityTests").appendChild(li);
-    });
-
-    // ESG
-    CONFIG.esg.commitments.forEach(x=>{
-      const li = document.createElement("li");
-      li.textContent = x;
-      $("#esgCommitments").appendChild(li);
-    });
-    CONFIG.esg.watchouts.forEach(x=>{
-      const li = document.createElement("li");
-      li.textContent = x;
-      $("#esgWatchouts").appendChild(li);
-    });
-
-    // Risks
-    CONFIG.risks.forEach(x=>{
-      const li = document.createElement("li");
-      li.textContent = x;
-      $("#riskList").appendChild(li);
-    });
-
-    /***********************
-     * TABS
-     ***********************/
-    const tabs = $$(".tab");
-    tabs.forEach(t=>{
-      t.addEventListener("click", ()=>activateTab(t.dataset.tab));
-      t.addEventListener("keydown",(e)=>{
-        if(e.key==="Enter" || e.key===" "){ e.preventDefault(); activateTab(t.dataset.tab); }
-      });
-    });
-    function activateTab(id){
-      tabs.forEach(t=>{
-        const active = t.dataset.tab===id;
-        t.classList.toggle("active", active);
-        t.setAttribute("aria-selected", active ? "true" : "false");
-      });
-      $$(".pane").forEach(p=>p.classList.toggle("active", p.id===id));
-    }
-
-    /***********************
-     * FILTER CHIPS
-     ***********************/
-    const chips = $$(".chip");
-    chips.forEach(c=>c.addEventListener("click", ()=>{
-      chips.forEach(x=>x.classList.remove("active"));
-      c.classList.add("active");
-      const f = c.dataset.filter;
-      $$("[data-tags]").forEach(card=>{
-        const tags = (card.getAttribute("data-tags") || "").split(/\s+/).filter(Boolean);
-        const show = (f==="all") || tags.includes(f);
-        card.style.display = show ? "" : "none";
-      });
-      toast(`Filter applied: ${f.toUpperCase()}`);
-    }));
-
-    /***********************
-     * COPY LINK
-     ***********************/
-    $("#copyLinkBtn").addEventListener("click", async ()=>{
-      try{
-        const url = window.location.href;
-        await navigator.clipboard.writeText(url);
-        toast("Link copied to clipboard.");
-      }catch(err){
-        toast("Unable to copy automatically. Please copy the address bar URL.");
-      }
-    });
-
-    /***********************
-     * TOAST
-     ***********************/
-    let toastTimer = null;
-    function toast(msg){
-      const el = $("#toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=>el.classList.remove("show"), 3200);
-    }
-
-    // Init logo
-    applyLogo(CONFIG.defaultLogo);
-  </script>
+<script>
+  function showTab(i){
+    document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+    document.querySelectorAll('.pane').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  }
+</script>
 </body>
 </html>
